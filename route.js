@@ -91,7 +91,7 @@ export const PHASES = [
   {
     id: 'to-yankee-1', n: 2,
     headline: 'YTEM → YANKEE',
-    sub: 'Big Wing cruise. Watch right at 6 NM from installation.',
+    sub: 'Solo forward recon, ahead of the Big Wing. Watch right at 6 NM from installation.',
     showCDI: true, from: 'YTEM', to: 'YANKEE', targetIAS: 90,
     alerts: [
       { id: 'install-6nm', distFrom: 'INSTALL', atNM: 6,
@@ -129,7 +129,7 @@ export const PHASES = [
   {
     id: 'to-ywwl', n: 6,
     headline: 'YANKEE → YWWL',
-    sub: 'Big Wing disbands at YWWL.',
+    sub: 'Press on for the YWWL turn point; Big Wing follows behind.',
     showCDI: true, from: 'YANKEE', to: 'YWWL', targetIAS: 90,
     advance: { type: 'distFromBelow', wp: 'YWWL', nm: 0.7 },
   },
