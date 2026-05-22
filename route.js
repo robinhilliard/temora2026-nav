@@ -145,7 +145,7 @@ export const PHASES = [
       { id: 'town-2nm', distFrom: 'INTERSECT', atNM: 2,
         headline: 'TOWN COMING UP — WATCH FOR SILOS' },
     ],
-    advance: { type: 'distFromBelow', wp: 'INTERSECT', nm: 0.5 },
+    advance: { type: 'distFromBelow', wp: 'INTERSECT', nm: 1.0 },
   },
   {
     id: 'at-intersect', n: 8,
