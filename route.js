@@ -131,7 +131,7 @@ export const PHASES = [
   {
     id: 'to-ywwl', n: 6,
     headline: 'YANKEE → YWWL',
-    sub: 'Press on for the YWWL turn point; Big Wing follows behind.',
+    sub: 'Press on for the YWWL turn point.',
     showCDI: true, from: 'YANKEE', to: 'YWWL', targetIAS: 90,
     advance: { type: 'distFromBelow', wp: 'YWWL', nm: 0.7 },
   },
