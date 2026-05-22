@@ -11,16 +11,22 @@ worker so it keeps working out of cell range.
 ## What it does
 
 - Big high-contrast cockpit UI calibrated for arm's-reach viewing in sun.
+- **Tap-only in flight** — no typing while flying. Free-text answers (Yankee
+  landmarks, town name, grain type, forced-landing sites) go on a paper scratch
+  pad; the app captures only the things that are faster to tap than write.
 - 12 named flight phases driven by a route-aware state machine that
   auto-advances on geofence triggers (e.g. within 3 NM of Mystery Installation,
   within 0.7 NM of Yankee, etc.) and supports a manual `NEXT PHASE` override.
 - Live CDI: desired track, GPS ground track, drift in degrees, and a fly-to-
   needle cross-track strip with a numeric "x.x NM L/R" readout.
 - Ground-speed + ETA + distance numerics in 110 pt font.
-- Quizzes captured at the right moment (mystery installation, Yankee
-  landmarks, pass-over town) with `localStorage` persistence.
+- Tap-only quizzes:
+  - Mystery installation: 5-button single choice
+  - Pass-over town: silo counter (+/-), quadrant (NE/NW/SE/SW), WAC mark
+    (Y/N), railway active (Y/N)
 - Cootamundra study cards (items 10–13) pre-loaded from
-  [`quiz_answers.md`](./quiz_answers.md) for the visit at YCTM.
+  [`quiz_answers.md`](./quiz_answers.md). Reviewed pre-flight from setup; not
+  shown in flight; included verbatim in post-flight COPY ANSWERS.
 - Full-screen amber flash + `navigator.vibrate()` on alerts and phase
   transitions so it grabs attention from the right side of the panel.
 - Wake Lock API keeps the screen on while the page is foreground.
@@ -66,8 +72,12 @@ worker so it keeps working out of cell range.
    - TAS, planned IAS, wind FROM (°T), wind speed, magnetic variation.
    - Waypoint coordinates (Yankee, Installation, Intersection are derived
      but editable).
-3. Tap **BEGIN**. Phase 2 (`YTEM → YANKEE`) is now active.
-4. Once airborne with GS > 30 kt the Flight Elapsed Timer auto-starts.
+3. Tap **COOTAMUNDRA STUDY CARDS** and read items 10–13 — these are not shown
+   in flight, but they do go into the post-flight COPY ANSWERS text.
+4. Tap **YANKEE RECON PHOTO** and familiarise yourself with the landmarks —
+   the same image is one tap away again at the Yankee phase.
+5. Tap **BEGIN**. Phase 2 (`YTEM → YANKEE`) is now active.
+6. Once airborne with GS > 30 kt the Flight Elapsed Timer auto-starts.
 
 ## In-flight UX
 
@@ -75,9 +85,8 @@ worker so it keeps working out of cell range.
   the CDI block (track + cross-track), and big distance / ETA / GS numerics.
 - Approach alerts flash the screen amber + vibrate ~6 NM before the next
   decision point.
-- Quizzes overlay the in-flight card; tap-to-answer or use the on-screen
-  number keypad. Answers save instantly to `localStorage`.
-- The **STUDY** button at any point opens the Cootamundra cards.
+- Tap-only quiz cards overlay the in-flight card. Every tap auto-saves to
+  `localStorage` — there's no SAVE button to find.
 - Phase auto-advance happens at the geofence triggers in
   [`route.js`](./route.js) — manual `NEXT PHASE` is always available if GPS
   is unreliable or you want to skip ahead.
@@ -86,10 +95,10 @@ worker so it keeps working out of cell range.
 
 | Phase | Trigger | Prompt |
 |-------|---------|--------|
-| 2 → 3 | within 3 NM of Mystery Installation | flash + open install quiz card |
-| 4 → 5 | within 0.7 NM of Yankee | flash + open Yankee photo + landmarks card |
-| 7 → 8 | within 0.5 NM of 034°M intersection | flash + open pass-over town card |
-| 9 → 10 | within 0.7 NM of YCTM | flash + auto-open study cards |
+| 2 → 3 | within 3 NM of Mystery Installation | flash + open install quiz card (5-button choice) |
+| 4 → 5 | within 0.7 NM of Yankee | flash + Yankee photo button (notes go on scratch pad) |
+| 7 → 8 | within 0.5 NM of 034°M intersection | flash + open pass-over town card (silos +/-, quadrant, WAC, rail) |
+| 9 → 10 | within 0.7 NM of YCTM | flash only — Cootamundra answers reviewed pre-flight |
 | 11 → 12 | within 0.5 NM of YTEM | flash "SPOT-LANDING PREP" |
 
 ## Math conventions

@@ -414,6 +414,40 @@ button {
   border-color: var(--accent);
 }
 
+.counter-row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+}
+.counter-btn {
+  flex: 0 0 auto;
+  min-width: 100px;
+  min-height: 100px;
+  font-size: 56px;
+  font-weight: 800;
+  background: #111;
+  color: var(--fg);
+  border: 2px solid var(--line);
+  border-radius: 10px;
+}
+.counter-btn:active {
+  background: var(--accent);
+  color: #000;
+}
+.counter-val {
+  flex: 1 1 auto;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 72px;
+  font-weight: 800;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  background: #0a0a0a;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+}
+
 /* ===== Modals ===== */
 
 .modal {

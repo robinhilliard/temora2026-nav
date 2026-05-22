@@ -17,27 +17,19 @@ export const QUIZZES = {
       { id: 'greenhouses',label: 'Green houses' },
     ],
   },
-  yankee: {
-    id: 'yankee',
-    title: 'Yankee landmarks & forced-landing sites',
-    type: 'multiField',
-    fields: [
-      { id: 'landmarks',     label: 'Landmarks identified',         kind: 'text' },
-      { id: 'landingSites',  label: 'Potential forced-landing sites', kind: 'text' },
-    ],
-  },
+  // No yankee quiz card in flight — pilot writes landmarks + landing sites on
+  // a scratch pad. The recon photo is reachable from the AT YANKEE phase.
   town: {
     id: 'town',
-    title: 'Pass-over town',
+    title: 'Pass-over town (tap only — town + grain on scratch pad)',
     type: 'multiField',
     fields: [
-      { id: 'town',     label: 'Town name',                      kind: 'text' },
-      { id: 'silos',    label: 'Silo count',                     kind: 'number' },
+      { id: 'silos',    label: 'Silos visible',
+        kind: 'counter', max: 20 },
       { id: 'quadrant', label: 'Quadrant of road intersection',
         kind: 'choice', options: ['NE', 'NW', 'SE', 'SW'] },
       { id: 'wac',      label: 'Marked correctly on WAC?',
         kind: 'choice', options: ['Yes', 'No'] },
-      { id: 'grain',    label: 'Grain type(s)',                  kind: 'text' },
       { id: 'rail',     label: 'Railway active?',
         kind: 'choice', options: ['Yes', 'No'] },
     ],

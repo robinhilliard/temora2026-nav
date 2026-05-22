@@ -67,7 +67,6 @@ function setPhase(i, opts = {}) {
   savePhaseIndex(i);
   const ph = PHASES[i];
   if (ph.flashOnEnter && !opts.silent) flashAttention();
-  if (ph.id === 'at-yctm' && !opts.silent) state.modal = 'study';
   if (ph.id === 'summary') state.modal = null;
   render();
 }
@@ -158,9 +157,19 @@ function onGeoError(ev) {
 // ===== Rendering =====
 
 const $ = (id) => document.getElementById(id);
-const setKids = (root, ...kids) => root.replaceChildren(
-  ...kids.filter((k) => k != null && k !== false)
-);
+// Flatten + drop null/false from a child list. Without this, a missed `...`
+// spread on a `.map()` result coerces the array to a string and renders as
+// `[object HTMLSpanElement],...` — caused a real CDI bug in the wild.
+const flattenKids = (kids) => {
+  const out = [];
+  for (const k of kids) {
+    if (k == null || k === false) continue;
+    if (Array.isArray(k)) out.push(...flattenKids(k));
+    else out.push(k);
+  }
+  return out;
+};
+const setKids = (root, ...kids) => root.replaceChildren(...flattenKids(kids));
 const h = (tag, attrs = {}, ...kids) => {
   const el = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
@@ -171,8 +180,7 @@ const h = (tag, attrs = {}, ...kids) => {
     else if (v === false || v == null) {}
     else el.setAttribute(k, v);
   }
-  for (const k of kids) {
-    if (k == null || k === false) continue;
+  for (const k of flattenKids(kids)) {
     el.append(k.nodeType ? k : document.createTextNode(String(k)));
   }
   return el;
@@ -242,6 +250,20 @@ function renderSetup() {
     h('section', {},
       h('h2', {}, 'Plan summary'),
       planSummary(),
+    ),
+
+    h('section', {},
+      h('h2', {}, 'Pre-flight review'),
+      h('p', { class: 'small' },
+        'In flight you will tap and write — never type. The Cootamundra answers (items 10-13) are pre-loaded; review them now.'),
+      h('div', { class: 'btn-row' },
+        h('button', { class: 'btn-secondary',
+          on: { click: () => { state.modal = 'study'; render(); } } },
+          'COOTAMUNDRA STUDY CARDS'),
+        h('button', { class: 'btn-secondary',
+          on: { click: () => { state.modal = 'photo'; render(); } } },
+          'YANKEE RECON PHOTO'),
+      ),
     ),
 
     h('div', { class: 'btn-row' },
@@ -347,7 +369,10 @@ function renderFlight() {
 
   const quiz = ph.quiz ? renderQuizCard(QUIZZES[ph.quiz]) : null;
   const reconBtn = ph.showRecon
-    ? h('button', { class: 'btn-secondary', on: { click: () => { state.modal = 'photo'; render(); } } }, 'YANKEE PHOTO')
+    ? h('div', { class: 'btn-row' },
+        h('button', { class: 'btn-secondary',
+          on: { click: () => { state.modal = 'photo'; render(); } } },
+          'YANKEE PHOTO'))
     : null;
 
   setKids(root,
@@ -369,7 +394,6 @@ function renderFlight() {
 
     h('div', { class: 'btn-row btn-row-bottom' },
       h('button', { class: 'btn-secondary', on: { click: prevPhase } }, 'PREV'),
-      h('button', { class: 'btn-secondary', on: { click: () => { state.modal = 'study'; render(); } } }, 'STUDY'),
       h('button', { class: 'btn-primary',   on: { click: nextPhase } }, 'NEXT PHASE'),
     ),
   );
@@ -397,7 +421,7 @@ function renderCDI(lg) {
     ),
     h('div', { class: 'cdi' },
       h('div', { class: 'cdi-scale' },
-        ['L', '·', '·', '·', '·', '·', '·', '·', '·', 'R'].map((c, i) =>
+        ...['L', '·', '·', '·', '·', '·', '·', '·', '·', 'R'].map((c, i) =>
           h('span', { class: i === 4 || i === 5 ? 'cdi-c' : 'cdi-d' }, c)),
         h('div', { class: 'cdi-needle', style: `left:${pct}%` }),
       ),
@@ -452,14 +476,6 @@ function renderQuizCard(q) {
         h('label', {}, f.label),
         renderQuizField(q, f, draft),
       )),
-      h('button', {
-        class: 'btn-secondary',
-        on: { click: () => {
-          saveAnswer(q.id, { ...(state.quizAnswers[q.id]?.value || {}), ...(state.answersDraft[q.id] || {}) });
-          state.quizAnswers = loadAnswers();
-          render();
-        } },
-      }, 'SAVE'),
     );
   }
 
@@ -475,25 +491,37 @@ function renderQuizField(q, f, draft) {
     state.answersDraft[q.id] = d;
   };
 
+  const persist = () => {
+    saveAnswer(q.id, { ...(state.quizAnswers[q.id]?.value || {}), ...state.answersDraft[q.id] });
+    state.quizAnswers = loadAnswers();
+    render();
+  };
+
   if (f.kind === 'choice') {
     return h('div', { class: 'choice-row' },
       ...f.options.map((opt) => h('button', {
         class: 'choice' + (val === opt ? ' selected' : ''),
-        on: { click: () => {
-          setField(opt);
-          saveAnswer(q.id, { ...(state.quizAnswers[q.id]?.value || {}), ...state.answersDraft[q.id] });
-          state.quizAnswers = loadAnswers();
-          render();
-        } },
+        on: { click: () => { setField(opt); persist(); } },
       }, opt)),
     );
   }
-  if (f.kind === 'number') {
-    return h('input', {
-      type: 'number', inputmode: 'numeric', value: String(val ?? ''),
-      on: { input: (e) => setField(e.target.value) },
-    });
+
+  if (f.kind === 'counter') {
+    const cur = Number.isFinite(parseInt(val, 10)) ? parseInt(val, 10) : 0;
+    const max = f.max ?? 99;
+    const setN = (n) => {
+      const c = Math.max(0, Math.min(max, n));
+      setField(String(c));
+      persist();
+    };
+    return h('div', { class: 'counter-row' },
+      h('button', { class: 'counter-btn', on: { click: () => setN(cur - 1) } }, '−'),
+      h('div', { class: 'counter-val' }, String(cur)),
+      h('button', { class: 'counter-btn', on: { click: () => setN(cur + 1) } }, '+'),
+    );
   }
+
+  // Fallback (only used by setup, never in-flight): plain text input.
   return h('input', {
     type: 'text', value: String(val ?? ''),
     on: { input: (e) => setField(e.target.value) },
@@ -544,19 +572,25 @@ function renderSummary() {
     '',
     `Item 4. Mystery installation: ${installLabel}`,
     '',
-    'Item 6. Yankee landmarks & forced-landing sites:',
-    `  Landmarks: ${fmtField('yankee','landmarks')}`,
-    `  Landing sites: ${fmtField('yankee','landingSites')}`,
+    'Item 6. Yankee landmarks & forced-landing sites: see scratch pad.',
     '',
     'Items 7-9. Pass-over town:',
-    `  Town: ${fmtField('town','town')}`,
-    `  Silos: ${fmtField('town','silos')}`,
-    `  Quadrant: ${fmtField('town','quadrant')}`,
-    `  On WAC?: ${fmtField('town','wac')}`,
-    `  Grain: ${fmtField('town','grain')}`,
-    `  Railway active?: ${fmtField('town','rail')}`,
+    '  Town:           (scratch pad)',
+    `  Silos visible:  ${fmtField('town','silos')}`,
+    `  Quadrant:       ${fmtField('town','quadrant')}`,
+    `  On WAC?:        ${fmtField('town','wac')}`,
+    '  Grain:          (scratch pad)',
+    `  Railway active: ${fmtField('town','rail')}`,
     '',
-    'Items 10-13: see Cootamundra study cards (pre-prepared).',
+    'Items 10-13. Cootamundra (pre-flight research):',
+    "  10a. \"XXXXXXX Paddocks\":   Quinlan's Paddock",
+    '  10b. DH-6 pilot 5/4/1919:  unknown — confirm against field plaques',
+    '  11.  1930s rest-stop:      Smith bros (Vimy 1920), Hinkler (Avian 1928),',
+    '                              KLM Uiver (DC-2 1934), Kingsford Smith',
+    '                              (Southern Cross VH-USU)',
+    '  12.  RAAF aircraft 40-46:  Avro Anson (No. 1 AOS, 25 Jun 1940)',
+    '  13.  Strike incorrect:     Airland, Trans Australian Airlines,',
+    '                              Australian National Airways, REX Airlines',
   ].join('\n');
 
   setKids(root,
@@ -567,17 +601,23 @@ function renderSummary() {
     ),
     h('section', {},
       h('h2', {}, 'Item 6 — Yankee'),
-      h('p', {}, h('strong', {}, 'Landmarks: '), fmtField('yankee','landmarks')),
-      h('p', {}, h('strong', {}, 'Landing sites: '), fmtField('yankee','landingSites')),
+      h('p', {}, h('em', {}, 'Landmarks + forced-landing sites: see scratch pad.')),
     ),
     h('section', {},
       h('h2', {}, 'Items 7-9 — Pass-over town'),
-      h('p', {}, h('strong', {}, 'Town: '), fmtField('town','town')),
-      h('p', {}, h('strong', {}, 'Silos: '), fmtField('town','silos')),
+      h('p', {}, h('strong', {}, 'Town: '), h('em', {}, '(scratch pad)')),
+      h('p', {}, h('strong', {}, 'Silos visible: '), fmtField('town','silos')),
       h('p', {}, h('strong', {}, 'Quadrant: '), fmtField('town','quadrant')),
       h('p', {}, h('strong', {}, 'On WAC?: '), fmtField('town','wac')),
-      h('p', {}, h('strong', {}, 'Grain: '), fmtField('town','grain')),
+      h('p', {}, h('strong', {}, 'Grain: '), h('em', {}, '(scratch pad)')),
       h('p', {}, h('strong', {}, 'Railway active?: '), fmtField('town','rail')),
+    ),
+    h('section', {},
+      h('h2', {}, 'Items 10-13 — Cootamundra'),
+      h('p', {}, h('em', {}, 'Pre-flight research, included in COPY ANSWERS:')),
+      h('button', { class: 'btn-secondary',
+        on: { click: () => { state.modal = 'study'; render(); } } },
+        'OPEN STUDY CARDS'),
     ),
     h('div', { class: 'btn-row btn-row-bottom' },
       h('button', { class: 'btn-secondary', on: { click: prevPhase } }, 'BACK'),

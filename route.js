@@ -73,9 +73,8 @@ export function deriveWaypoints(fixed, varE) {
 //   targetIAS       — kt
 //   secondaryDist   — waypoint id for a secondary "X NM to Y" readout
 //   alerts          — [{ id, distFrom (wp id), atNM, headline }]; fired once each
-//   quiz            — quiz id ('install' | 'yankee' | 'town')
+//   quiz            — quiz id ('install' | 'town')
 //   showRecon       — true → Yankee photo button visible
-//   showStudyCards  — true → Cootamundra cards open by default
 //   showSummary     — true → final review screen
 //   flashOnEnter    — true → fire flashAttention() in onEnter
 //   advance         — { type: 'manual' | 'distFromBelow' | 'manualOrTimeout', ... }
@@ -121,9 +120,9 @@ export const PHASES = [
   {
     id: 'at-yankee', n: 5,
     headline: 'AT YANKEE',
-    sub: 'SINGLE LEFT-HAND ORBIT. Identify against photo.',
+    sub: 'Single LEFT-HAND orbit. Notes on scratch pad.',
     showCDI: false, targetIAS: 90,
-    quiz: 'yankee', showRecon: true, flashOnEnter: true,
+    showRecon: true, flashOnEnter: true,
     advance: { type: 'manualOrTimeout', timeoutSec: 180 },
   },
   {
@@ -148,7 +147,7 @@ export const PHASES = [
   {
     id: 'at-intersect', n: 8,
     headline: 'PASS-OVER TOWN',
-    sub: 'Capture observations, then divert south to YCTM.',
+    sub: 'Tap what you see. Town name + grain on scratch pad.',
     showCDI: false, targetIAS: 90,
     quiz: 'town', flashOnEnter: true,
     advance: { type: 'manualOrTimeout', timeoutSec: 180 },
@@ -163,9 +162,9 @@ export const PHASES = [
   {
     id: 'at-yctm', n: 10,
     headline: 'COOTAMUNDRA',
-    sub: 'Review study cards, then track home.',
+    sub: 'Track home. Study answers reviewed pre-flight.',
     showCDI: false, targetIAS: 90,
-    showStudyCards: true, flashOnEnter: true,
+    flashOnEnter: true,
     advance: { type: 'manual' },
   },
   {
