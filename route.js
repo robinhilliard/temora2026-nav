@@ -88,13 +88,16 @@ export const PHASES = [
     advance: { type: 'manual' },
   },
   {
-    id: 'to-yankee-1', n: 2,
-    headline: 'YTEM → YANKEE',
-    sub: 'Solo forward recon, ahead of the Big Wing. Watch right at 6 NM from installation.',
-    showCDI: true, from: 'YTEM', to: 'YANKEE', targetIAS: 90,
+    // Fly YTEM → INSTALL → YANKEE (not direct). The detour via the
+    // installation keeps outbound traffic clear of YWWL inbounds — head-on
+    // separation, briefing intent.
+    id: 'to-install', n: 2,
+    headline: 'YTEM → INSTALL',
+    sub: 'Solo forward recon. Detour via installation keeps YWWL inbounds clear.',
+    showCDI: true, from: 'YTEM', to: 'INSTALL', targetIAS: 90,
     alerts: [
       { id: 'install-6nm', distFrom: 'INSTALL', atNM: 6,
-        headline: 'INSTALLATION 6 NM — LOOK RIGHT' },
+        headline: 'INSTALLATION 6 NM AHEAD' },
     ],
     advance: { type: 'distFromBelow', wp: 'INSTALL', nm: 3 },
   },
