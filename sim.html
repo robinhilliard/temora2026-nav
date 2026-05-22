@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<!--
+  sim.html — local-only sim entry. DO NOT PUSH.
+  Loads sim.js, which installs a fake GeoWatcher and then dynamically
+  imports app.js. No service worker registration here — we want fresh
+  app.js / sim.js on every reload.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#000000">
+  <link rel="stylesheet" href="styles.css">
+  <title>BoB NAV — SIM</title>
+</head>
+<body>
+  <div id="app">
+    <section id="screen-setup" class="screen"></section>
+    <section id="screen-flight" class="screen hidden"></section>
+    <section id="screen-summary" class="screen hidden"></section>
+    <div id="modal-photo" class="modal hidden"></div>
+    <div id="modal-study" class="modal hidden"></div>
+  </div>
+  <div id="flash"></div>
+  <!--
+    Reset persisted app state synchronously, BEFORE any module loads.
+    Module scripts are deferred, so this inline classic script runs first.
+    app.js reads localStorage at module init time (loadSettings,
+    loadPhaseIndex, loadAnswers) — the reset has to happen now or the
+    sim inherits leftover phase/answers from the previous run.
+
+    Also: if you previously visited index.html on this origin, its
+    service worker is still installed and will intercept requests from
+    sim.html, serving cached versions of app.js/route.js etc. Unregister
+    any SWs and clear all caches on every sim load so we always run live
+    code. Reload once after cleanup so the next request is intercepted
+    by nobody.
+  -->
+  <script>
+    (function () {
+      try {
+        const SKEY = 'bobnav.settings.v1';
+        localStorage.setItem('bobnav.phase.v1', '0');
+        localStorage.removeItem('bobnav.answers.v1');
+        const cur = JSON.parse(localStorage.getItem(SKEY) || '{}');
+        const params = new URLSearchParams(location.search);
+        const varE = Number(params.get('varE') ?? '12');
+        localStorage.setItem(SKEY, JSON.stringify({
+          tasKt: 95, iasKt: 90, windFromT: 90, windKt: 10,
+          ...cur,
+          varE,
+          takeoffAt: null,
+        }));
+      } catch (_) {}
+    })();
+    (async function nukeSW() {
+      const params = new URLSearchParams(location.search);
+      if (params.get('_clean') === '1') {
+        console.info('[sim] post-cleanup load — running fresh');
+        return;
+      }
+      let cleaned = false;
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        console.info('[sim] SW registrations found:', regs.length);
+        if (regs.length > 0) {
+          await Promise.all(regs.map((r) => r.unregister()));
+          cleaned = true;
+        }
+      }
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        console.info('[sim] cache keys found:', keys);
+        if (keys.length > 0) {
+          await Promise.all(keys.map((k) => caches.delete(k)));
+          cleaned = true;
+        }
+      }
+      if (cleaned) {
+        console.info('[sim] SW + caches cleared, reloading…');
+        params.set('_clean', '1');
+        location.replace(location.pathname + '?' + params.toString());
+      }
+    })();
+  </script>
+  <script type="module" src="sim.js"></script>
+</body>
+</html>

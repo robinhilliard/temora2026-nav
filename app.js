@@ -5,7 +5,14 @@ import {
   units, normalize360, magToTrue, trueToMag,
   haversineNM, initialBearingTrue, crossTrackNM, trackError, windTriangle,
 } from './nav.js';
-import { geo } from './geo.js';
+import { geo as realGeo } from './geo.js';
+// `globalThis.__simGeo__` lets a local-only sim harness swap in a fake
+// GeoWatcher (same surface: addEventListener('fix'/'error'), start(),
+// stop(), qualityDots()). Resolved inside boot() so a sim module that
+// statically imports this file can install the override after our
+// top-level evaluates but before DOMContentLoaded fires. No-op in
+// production where __simGeo__ is undefined.
+let geo = realGeo;
 import { startWakeLock } from './wake.js';
 import { flashAttention } from './flash.js';
 import { FIXED_WAYPOINTS, deriveWaypoints, PHASES } from './route.js';
@@ -649,6 +656,7 @@ function formatHMS(ms) {
 // ===== Boot =====
 
 function boot() {
+  geo = globalThis.__simGeo__ || realGeo;
   rebuildWaypoints();
   state.fetStartAt = state.settings.takeoffAt || null;
   startWakeLock();
