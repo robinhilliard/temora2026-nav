@@ -1,0 +1,513 @@
+/* styles.css — high-contrast cockpit UI
+ * Sized for an iPad mounted on the right side of the panel, viewed at arm's
+ * reach (~50-70 cm) from the left seat. Black background, white type,
+ * single accent amber for "act now" callouts and the CDI needle.
+ */
+
+:root {
+  --bg: #000;
+  --fg: #fff;
+  --dim: #aaa;
+  --line: #333;
+  --accent: #FFB000;        /* amber */
+  --good: #6f6;
+  --bad: #f55;
+
+  /* Flight-screen sizes — calibrated for arm's-reach viewing */
+  --status-pt: 30px;
+  --headline-pt: 88px;
+  --subhead-pt: 36px;
+  --numeric-pt: 110px;
+  --num-label-pt: 24px;
+  --body-pt: 36px;
+  --target-h: 120px;
+
+  /* Setup-screen sizes — read on the ground at desk distance */
+  --setup-base: 22px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, "SF Pro Display", system-ui, sans-serif;
+  font-weight: 600;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}
+
+input, button, select, textarea {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+}
+
+button {
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.hidden { display: none !important; }
+
+/* ===== Screens ===== */
+
+#app { width: 100%; min-height: 100%; }
+
+.screen {
+  width: 100%;
+  min-height: 100vh;
+  padding: 16px;
+}
+
+/* ===== Setup screen ===== */
+
+#screen-setup {
+  font-size: var(--setup-base);
+  padding: 24px 20px 80px;
+}
+
+#screen-setup h1 {
+  font-size: 44px;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+#screen-setup .tagline {
+  color: var(--dim);
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+
+#screen-setup section {
+  margin: 28px 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+#screen-setup h2 {
+  font-size: 26px;
+  margin-bottom: 12px;
+  color: var(--accent);
+}
+
+.num-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.num-row span { font-weight: 500; }
+.num-row input {
+  width: 140px;
+  padding: 10px 12px;
+  font-size: 24px;
+  text-align: right;
+  background: #111;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.wp-row {
+  display: grid;
+  grid-template-columns: minmax(110px, max-content) 1fr;
+  grid-template-rows: auto auto;
+  gap: 4px 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.wp-id { grid-column: 1; grid-row: 1; font-weight: 700; color: var(--accent); white-space: nowrap; font-size: 20px; }
+.wp-name { grid-column: 2; grid-row: 1; font-weight: 600; }
+.wp-coord { grid-column: 1 / span 2; grid-row: 2; color: var(--dim); font-family: ui-monospace, "SF Mono", Menlo, monospace; font-weight: 500; font-size: 18px; }
+.wp-note { grid-column: 1 / span 2; grid-row: 3; color: var(--dim); font-weight: 400; font-style: italic; font-size: 16px; }
+
+.plan-summary table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 18px;
+}
+.plan-summary th {
+  text-align: left;
+  padding: 6px 8px;
+  font-size: 16px;
+  color: var(--dim);
+  border-bottom: 1px solid var(--line);
+}
+.plan-summary td {
+  padding: 8px;
+  border-bottom: 1px solid var(--line);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-weight: 500;
+}
+
+.small { color: var(--dim); font-size: 16px; font-weight: 500; margin-top: 8px; line-height: 1.4; }
+
+/* ===== Buttons ===== */
+
+.btn-primary, .btn-secondary {
+  min-height: var(--target-h);
+  padding: 0 24px;
+  border-radius: 12px;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  flex: 1;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #000;
+}
+.btn-secondary {
+  background: #222;
+  color: var(--fg);
+  border: 2px solid var(--line);
+}
+
+.btn-row {
+  display: flex;
+  gap: 14px;
+  padding: 16px 0;
+}
+
+.btn-row-bottom {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  background: linear-gradient(180deg, transparent 0%, var(--bg) 30%, var(--bg) 100%);
+  padding-top: 28px;
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+#screen-setup .btn-row {
+  margin-top: 24px;
+}
+
+/* ===== Flight screen ===== */
+
+#screen-flight {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 12px 16px env(safe-area-inset-bottom, 16px);
+  font-size: var(--body-pt);
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--status-pt);
+  font-weight: 600;
+  color: var(--dim);
+  padding: 4px 0 12px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  letter-spacing: 0.5px;
+}
+
+.headline {
+  font-size: var(--headline-pt);
+  line-height: 1;
+  letter-spacing: -1px;
+  font-weight: 800;
+  margin: 4px 0 4px;
+  padding: 6px 0;
+}
+.headline.alert {
+  color: var(--accent);
+  text-shadow: 0 0 1px var(--accent);
+}
+
+.subhead {
+  font-size: var(--subhead-pt);
+  font-weight: 600;
+  color: var(--dim);
+  margin-bottom: 16px;
+  line-height: 1.1;
+}
+
+.cdi-block {
+  margin: 8px 0 16px;
+}
+.cdi-block.no-fix {
+  color: var(--dim);
+  font-size: var(--subhead-pt);
+}
+
+.track-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 38px;
+  margin-bottom: 16px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+.track-row label {
+  color: var(--dim);
+  font-weight: 500;
+  font-size: 24px;
+  margin-right: 8px;
+}
+.track-row strong { font-weight: 700; }
+.drift { font-weight: 700; }
+.drift.alert { color: var(--accent); }
+
+.cdi {
+  position: relative;
+  padding: 16px 8px 4px;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  background: #0a0a0a;
+}
+
+.cdi-scale {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 36px;
+  font-size: 28px;
+  color: var(--dim);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-weight: 500;
+}
+.cdi-d { font-size: 24px; }
+.cdi-c { color: var(--fg); font-weight: 700; }
+
+.cdi-needle {
+  position: absolute;
+  top: -10px;
+  bottom: -10px;
+  width: 6px;
+  background: var(--accent);
+  border-radius: 3px;
+  transform: translateX(-50%);
+  box-shadow: 0 0 8px rgba(255, 176, 0, 0.6);
+  transition: left 0.2s ease-out;
+}
+
+.cdi-numeric {
+  text-align: center;
+  font-size: 28px;
+  margin-top: 10px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  color: var(--fg);
+  font-weight: 700;
+}
+
+.numerics {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+  margin: 16px 0 8px;
+}
+.num-cell { text-align: center; }
+.num-val {
+  font-size: var(--numeric-pt);
+  line-height: 1;
+  font-weight: 800;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  letter-spacing: -2px;
+}
+.num-lab {
+  font-size: var(--num-label-pt);
+  color: var(--dim);
+  font-weight: 500;
+  margin-top: 4px;
+}
+.num-target {
+  grid-column: 1 / span 3;
+  text-align: center;
+  font-size: 30px;
+  margin-top: 8px;
+  color: var(--dim);
+  font-weight: 600;
+}
+
+.secondary {
+  text-align: center;
+  font-size: 32px;
+  color: var(--dim);
+  margin: 8px 0 16px;
+}
+.secondary strong { color: var(--fg); }
+
+/* ===== Quiz ===== */
+
+.quiz {
+  margin: 16px 0;
+  padding: 16px;
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  background: rgba(255, 176, 0, 0.06);
+}
+.quiz-title {
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.quiz-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.quiz-opt {
+  min-height: var(--target-h);
+  padding: 12px 16px;
+  font-size: 28px;
+  font-weight: 600;
+  background: #111;
+  color: var(--fg);
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  text-align: center;
+}
+.quiz-opt.selected {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+
+.quiz-field { margin: 10px 0; }
+.quiz-field label {
+  display: block;
+  font-size: 24px;
+  color: var(--dim);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+.quiz-field input {
+  width: 100%;
+  padding: 14px 12px;
+  font-size: 28px;
+  background: #111;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.choice-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.choice {
+  flex: 1 1 auto;
+  min-width: 120px;
+  min-height: 80px;
+  padding: 8px 16px;
+  font-size: 28px;
+  background: #111;
+  color: var(--fg);
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  font-weight: 700;
+}
+.choice.selected {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+
+/* ===== Modals ===== */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.96);
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 16px;
+}
+.modal-inner {
+  max-width: 100%;
+  margin: 0 auto;
+  padding-bottom: 80px;
+}
+.modal-inner img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto 20px;
+}
+.modal-inner.study h2 {
+  font-size: 34px;
+  margin-bottom: 16px;
+  color: var(--accent);
+}
+.study-card {
+  margin: 18px 0;
+  padding: 14px 16px;
+  border-left: 4px solid var(--accent);
+  background: #0a0a0a;
+}
+.study-card h3 {
+  font-size: 26px;
+  margin-bottom: 8px;
+  color: var(--accent);
+}
+.study-card p {
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.35;
+  margin: 6px 0;
+}
+
+.modal-inner .btn-primary {
+  position: sticky;
+  bottom: env(safe-area-inset-bottom, 16px);
+  margin-top: 16px;
+}
+
+/* ===== Summary screen ===== */
+
+#screen-summary {
+  font-size: 24px;
+  padding: 24px 20px 80px;
+}
+#screen-summary h1 {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+#screen-summary section {
+  margin: 20px 0;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+#screen-summary h2 {
+  font-size: 28px;
+  margin-bottom: 8px;
+  color: var(--accent);
+}
+#screen-summary p { font-size: 22px; margin: 4px 0; line-height: 1.4; }
+
+/* ===== Flash overlay ===== */
+
+#flash {
+  position: fixed;
+  inset: 0;
+  background: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.7s ease-out;
+  z-index: 9999;
+}
+#flash.active {
+  opacity: 0.85;
+  transition: opacity 0.05s;
+}
+
+/* ===== Orientation ===== */
+
+@media (orientation: landscape) and (max-height: 700px) {
+  :root {
+    --headline-pt: 64px;
+    --numeric-pt: 88px;
+    --subhead-pt: 28px;
+  }
+}

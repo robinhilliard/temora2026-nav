@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="BoB NAV">
+  <meta name="theme-color" content="#000000">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+  <title>BoB NAV — Temora 2026</title>
+  <script>
+    if ('serviceWorker' in navigator && location.protocol === 'https:') {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <section id="screen-setup" class="screen"></section>
+    <section id="screen-flight" class="screen hidden"></section>
+    <section id="screen-summary" class="screen hidden"></section>
+    <div id="modal-photo" class="modal hidden"></div>
+    <div id="modal-study" class="modal hidden"></div>
+  </div>
+  <div id="flash"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
