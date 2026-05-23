@@ -1,4 +1,6 @@
-// sim.js — local-only flight simulator. DO NOT PUSH.
+// sim.js — flight simulator that drives the real UI off a synthetic GPS
+// stream. Originally local-only; published with the post-flight build so
+// other pilots can see how the in-flight app behaved without a plane.
 //
 // Loaded by sim.html INSTEAD of app.js. We:
 //   1. install a fake GeoWatcher on `globalThis.__simGeo__`,
@@ -155,7 +157,6 @@ function tickLoiter(ph, simDt, now) {
   if      (ph.id === 'observe-install') centre = wpts.INSTALL;
   else if (ph.id === 'at-yankee')       centre = wpts.YANKEE;
   else if (ph.id === 'at-intersect')    centre = wpts.INTERSECT;
-  else if (ph.id === 'at-yctm')         centre = wpts.YCTM;
   else                                   centre = pos;
 
   const t = now / 1000 * SPEED;        // orbit speed scales with sim speed
@@ -216,11 +217,7 @@ function autoPilot() {
     setTimeout(() => clickByText('NEXT PHASE'),  QUIZ_PAUSE_S * 1000);
     return;
   }
-  if (ph.id === 'at-yctm') {
-    setTimeout(() => clickByText('NEXT PHASE'),  QUIZ_PAUSE_S * 1000);
-    return;
-  }
-  // Other phases auto-advance via geofence.
+  // Other phases auto-advance via geofence (no YCTM stop in this route).
 }
 
 function townQuizSequence() {

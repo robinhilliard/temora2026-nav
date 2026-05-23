@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <!--
-  sim.html — local-only sim entry. DO NOT PUSH.
-  Loads sim.js, which installs a fake GeoWatcher and then dynamically
-  imports app.js. No service worker registration here — we want fresh
-  app.js / sim.js on every reload.
+  sim.html — simulator entry point. Loads sim.js, which installs a fake
+  GeoWatcher and statically imports app.js so the real UI runs against
+  synthetic GPS fixes. No service worker registration here — we want
+  fresh app.js / sim.js on every reload. Originally a local-only test
+  rig; published with the post-flight build for demo purposes.
 -->
 <html lang="en">
 <head>

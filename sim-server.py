@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-sim-server.py — local-only dev server for sim.html. DO NOT PUSH.
+sim-server.py — local dev server for sim.html.
 
 Why a separate server? The PWA service worker registered by index.html
 is cache-first for the whole origin, so it intercepts module imports

@@ -52,6 +52,22 @@ worker so it keeps working out of cell range.
   briefing pack (source of truth for waypoints).
 - [`quiz_answers.md`](./quiz_answers.md) — pre-flight research notes for the
   Cootamundra history quiz.
+- [`sim.html`](./sim.html), [`sim.js`](./sim.js), [`sim-server.py`](./sim-server.py) —
+  flight simulator. See "Try the simulator" below.
+
+## Try the simulator
+
+Want to see how the in-flight UI behaves without a plane?
+
+`https://<user>.github.io/temora2026-nav/sim.html?speed=5&quizPause=5&xtdAmp=0.4`
+
+The simulator replaces the GPS watcher with a synthetic stream that flies the
+exact route at a configurable time multiplier (`speed=5` = 5× real time, ~17
+min end-to-end), oscillates lateral track error (`xtdAmp` NM) so the CDI
+exercises, and auto-clicks BEGIN, quiz answers, and NEXT PHASE on each phase.
+A real run with no params (`speed=1`) takes ~85 minutes — the same as the
+actual flight. Same module graph as the production app, so what you see is
+what the iPad showed in the cockpit.
 
 ## iPad install (one-time, do this on the ground)
 
