@@ -443,7 +443,7 @@ function renderCDI(lg) {
 
 function renderNumerics(lg, ph) {
   const dist = lg ? `${lg.distToB.toFixed(1)}` : '—';
-  const eta = lg && lg.etaSec ? formatMS(lg.etaSec * 1000) : '—';
+  const eta = lg && lg.etaSec ? formatClock(Date.now() + lg.etaSec * 1000) : '—';
   const gs = lg && lg.gsKt != null ? `${lg.gsKt.toFixed(0)}` : '—';
   return h('div', { class: 'numerics' },
     h('div', { class: 'num-cell' }, h('div', { class: 'num-val' }, dist), h('div', { class: 'num-lab' }, 'NM TO GO')),
@@ -653,6 +653,15 @@ function formatHMS(ms) {
   return h > 0
     ? `${h}:${String(m).padStart(2,'0')}:${String(r).padStart(2,'0')}`
     : `${m}:${String(r).padStart(2,'0')}`;
+}
+
+// Wall-clock arrival time, 24-hour local. Used for ETA so the pilot can
+// glance at the panel and compare against the cockpit clock without doing
+// arithmetic (the pre-fix display showed a countdown, which was useful
+// in the air but wrong as an ETA).
+function formatClock(epochMs) {
+  const d = new Date(epochMs);
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 }
 
 // ===== Boot =====

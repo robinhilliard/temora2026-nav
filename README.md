@@ -57,17 +57,20 @@ worker so it keeps working out of cell range.
 
 ## Try the simulator
 
-Want to see how the in-flight UI behaves without a plane?
+Want to see how the in-flight UI behaved without a plane?
 
-`https://robinhilliard.github.io/temora2026-nav/sim.html?speed=5&quizPause=5&xtdAmp=0.4`
+`https://robinhilliard.github.io/temora2026-nav/sim.html`
 
 The simulator replaces the GPS watcher with a synthetic stream that flies the
-exact route at a configurable time multiplier (`speed=5` = 5× real time, ~17
-min end-to-end), oscillates lateral track error (`xtdAmp` NM) so the CDI
-exercises, and auto-clicks BEGIN, quiz answers, and NEXT PHASE on each phase.
-A real run with no params (`speed=1`) takes ~85 minutes — the same as the
-actual flight. Same module graph as the production app, so what you see is
-what the iPad showed in the cockpit.
+exact route in real time (~85 min end-to-end — same as the actual flight),
+oscillates lateral track error so the CDI exercises, and auto-presses BEGIN,
+quiz answers and NEXT PHASE on each phase. Same module graph as the
+production app, so what you see is what the iPad showed in the cockpit.
+
+Optional URL params: `?speed=N` for an N× time multiplier (note this makes
+ETA — which is now a wall-clock time — drift from actual arrival),
+`?quizPause=SEC` to shorten the dwell on quiz screens, `?xtdAmp=NM` for
+cross-track oscillation amplitude.
 
 ## iPad install (one-time, do this on the ground)
 
