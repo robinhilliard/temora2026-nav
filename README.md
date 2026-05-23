@@ -59,7 +59,7 @@ worker so it keeps working out of cell range.
 
 Want to see how the in-flight UI behaves without a plane?
 
-`https://<user>.github.io/temora2026-nav/sim.html?speed=5&quizPause=5&xtdAmp=0.4`
+`https://robinhilliard.github.io/temora2026-nav/sim.html?speed=5&quizPause=5&xtdAmp=0.4`
 
 The simulator replaces the GPS watcher with a synthetic stream that flies the
 exact route at a configurable time multiplier (`speed=5` = 5× real time, ~17
