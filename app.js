@@ -39,7 +39,10 @@ const DEFAULT_SETTINGS = {
 
 const state = {
   settings: { ...DEFAULT_SETTINGS, ...(loadSettings() || {}) },
-  phaseIndex: loadPhaseIndex(),
+  // Clamp to current PHASES bounds so a stale saved index from a prior
+  // version (e.g. when YCTM phases existed and the route was longer)
+  // doesn't put currentPhase() out of bounds on first render.
+  phaseIndex: Math.min(loadPhaseIndex(), PHASES.length - 1),
   fix: null,
   waypoints: null,
   alertsFired: new Set(),
@@ -311,8 +314,7 @@ function planSummary() {
     ['YTEM','YANKEE'],
     ['YANKEE','YWWL'],
     ['YWWL','INTERSECT'],
-    ['INTERSECT','YCTM'],
-    ['YCTM','YTEM'],
+    ['INTERSECT','YTEM'],
   ];
   const rows = legs.map(([a, b]) => {
     if (!wp[a] || !wp[b]) return null;

@@ -136,11 +136,16 @@ export const PHASES = [
     advance: { type: 'distFromBelow', wp: 'YWWL', nm: 0.7 },
   },
   {
+    // Operationally the leg ends at INTERSECT (we divert south for home).
+    // YYNG is just a defining reference for the great-circle direction —
+    // the pilot never actually flies there. Targeting INTERSECT means
+    // "NM TO GO" and ETA show distance to the meaningful waypoint.
+    // The XTD reference line is the same physical great circle either
+    // way, since INTERSECT lies on YWWL→YYNG by construction.
     id: 'to-intersect', n: 7,
-    headline: 'YWWL → YYNG',
-    sub: 'Divert south at the 034°M radial intersection.',
-    showCDI: true, from: 'YWWL', to: 'YYNG', targetIAS: 90,
-    secondaryDist: 'INTERSECT',
+    headline: 'YWWL → INTERSECT',
+    sub: 'Track YWWL→YYNG line; divert south at the 034°M radial.',
+    showCDI: true, from: 'YWWL', to: 'INTERSECT', targetIAS: 90,
     alerts: [
       { id: 'town-2nm', distFrom: 'INTERSECT', atNM: 2,
         headline: 'TOWN COMING UP — WATCH FOR SILOS' },
@@ -156,25 +161,12 @@ export const PHASES = [
     advance: { type: 'manualOrTimeout', timeoutSec: 180 },
   },
   {
-    id: 'to-yctm', n: 9,
-    headline: '→ COOTAMUNDRA',
-    sub: 'Track south to YCTM.',
-    showCDI: true, from: 'INTERSECT', to: 'YCTM', targetIAS: 90,
-    advance: { type: 'distFromBelow', wp: 'YCTM', nm: 0.7 },
-  },
-  {
-    id: 'at-yctm', n: 10,
-    headline: 'COOTAMUNDRA',
-    sub: 'Track home. Study answers reviewed pre-flight.',
-    showCDI: false, targetIAS: 90,
-    flashOnEnter: true,
-    advance: { type: 'manual' },
-  },
-  {
-    id: 'to-ytem', n: 11,
-    headline: 'YCTM → YTEM',
+    // Cootamundra removed from the plan — head straight home from the
+    // pass-over town. INTERSECT → YTEM is one continuous leg now.
+    id: 'to-ytem', n: 9,
+    headline: 'INTERSECT → YTEM',
     sub: 'Return for spot-landing contest.',
-    showCDI: true, from: 'YCTM', to: 'YTEM', targetIAS: 90,
+    showCDI: true, from: 'INTERSECT', to: 'YTEM', targetIAS: 90,
     alerts: [
       { id: 'spot-3nm', distFrom: 'YTEM', atNM: 3,
         headline: 'SPOT-LANDING PREP' },
@@ -182,7 +174,7 @@ export const PHASES = [
     advance: { type: 'distFromBelow', wp: 'YTEM', nm: 0.5 },
   },
   {
-    id: 'summary', n: 12,
+    id: 'summary', n: 10,
     headline: 'POST-FLIGHT',
     sub: 'Review and copy answers.',
     showCDI: false,

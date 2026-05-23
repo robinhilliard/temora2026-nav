@@ -14,7 +14,7 @@ worker so it keeps working out of cell range.
 - **Tap-only in flight** — no typing while flying. Free-text answers (Yankee
   landmarks, town name, grain type, forced-landing sites) go on a paper scratch
   pad; the app captures only the things that are faster to tap than write.
-- 12 named flight phases driven by a route-aware state machine that
+- 10 named flight phases driven by a route-aware state machine that
   auto-advances on geofence triggers (e.g. within 3 NM of Mystery Installation,
   within 0.7 NM of Yankee, etc.) and supports a manual `NEXT PHASE` override.
 - Live CDI: desired track, GPS ground track, drift in degrees, and a fly-to-
@@ -43,7 +43,7 @@ worker so it keeps working out of cell range.
 - [`geo.js`](./geo.js) — `watchPosition` with 5-fix rolling smoothing.
 - [`wake.js`](./wake.js) — Wake Lock API.
 - [`flash.js`](./flash.js) — amber flash + vibrate.
-- [`route.js`](./route.js) — fixed and derived waypoints, 12-phase definitions.
+- [`route.js`](./route.js) — fixed and derived waypoints, 10-phase definitions.
 - [`quiz.js`](./quiz.js) — quizzes, study cards, persistence.
 - [`sw.js`](./sw.js) — service worker (offline cache).
 - [`manifest.webmanifest`](./manifest.webmanifest) — PWA metadata.
@@ -76,7 +76,7 @@ worker so it keeps working out of cell range.
    in flight, but they do go into the post-flight COPY ANSWERS text.
 4. Tap **YANKEE RECON PHOTO** and familiarise yourself with the landmarks —
    the same image is one tap away again at the Yankee phase.
-5. Tap **BEGIN**. Phase 2 (`YTEM → YANKEE`) is now active.
+5. Tap **BEGIN**. Phase 2 (`YTEM → INSTALL`) is now active.
 6. Once airborne with GS > 30 kt the Flight Elapsed Timer auto-starts.
 
 ## In-flight UX
@@ -97,9 +97,8 @@ worker so it keeps working out of cell range.
 |-------|---------|--------|
 | 2 → 3 | within 3 NM of Mystery Installation | flash + open install quiz card (5-button choice) |
 | 4 → 5 | within 0.7 NM of Yankee | flash + Yankee photo button (notes go on scratch pad) |
-| 7 → 8 | within 0.5 NM of 034°M intersection | flash + open pass-over town card (silos +/-, quadrant, WAC, rail) |
-| 9 → 10 | within 0.7 NM of YCTM | flash only — Cootamundra answers reviewed pre-flight |
-| 11 → 12 | within 0.5 NM of YTEM | flash "SPOT-LANDING PREP" |
+| 7 → 8 | within 1.0 NM of 034°M intersection | flash + open pass-over town card (silos +/-, quadrant, WAC, rail) |
+| 9 → 10 | within 0.5 NM of YTEM | flash "SPOT-LANDING PREP" then post-flight summary |
 
 ## Math conventions
 
