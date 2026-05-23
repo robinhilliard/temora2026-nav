@@ -1,7 +1,7 @@
 // sw.js — service worker. Precaches the app shell so the iPad keeps working
 // when you fly out of cell range.
 
-const VERSION = 'bobnav-v5';
+const VERSION = 'bobnav-v6';
 const SHELL = [
   './',
   './index.html',
